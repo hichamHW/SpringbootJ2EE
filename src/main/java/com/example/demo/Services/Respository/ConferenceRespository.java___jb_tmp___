@@ -1,0 +1,66 @@
+package com.example.demo.Services.Respository;
+
+import com.example.demo.Models.Conference;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+public interface ConferenceRespository extends JpaRepository<Conference,Integer> {
+
+
+    @Query("select  u from Conference u  where  lower(u.Theme) LIKE lower(CONCAT('%',:keyword,'%') )"
+            + "OR lower(u.Organizer) LIKE lower(CONCAT('%',:keyword,'%') ) "
+            + "OR lower(u.Description) LIKE lower(CONCAT('%',:keyword,'%') ) "
+            + "OR lower(u.DateDebut) LIKE lower(CONCAT('%',:keyword,'%') ) "
+            + "OR lower(u.DateFin) LIKE lower(CONCAT('%',:keyword,'%') ) "
+            + "OR lower(u.TypePayement) LIKE lower(CONCAT('%',:keyword,'%') ) "
+    )
+
+    List<Conference> searchConference(@Param("keyword") String keyword);
+
+  @Query(value = "select  * from Conference u where u.id_profile_create = 1",nativeQuery = true)
+  List<Conference> ByprofileConference();
+
+
+  @Query("update  Conference u set u.isPubl = 1 where  u.Id =:idconfernce")
+
+    Boolean setPublConference( @Param("idconfernce") int Idconference);
+
+    @Query("update  Conference u set u.isPubl = 0  where  u.Id =:idconfernces")
+
+    Boolean setNotPublConference( @Param("idconfernces") int Idconference);
+
+
+
+    @Query("select  u from Conference  u order by u.DateJoin  desc ")
+    List<Conference> GetconferenceOrderdesc();
+
+
+    @Query("select  u from Conference  u where u.TypePayement ='pay' ")
+    List<Conference> GetconferencePay();
+
+
+
+    @Query("select  u from Conference  u where u.TypePayement ='free' ")
+    List<Conference> GetconferenceFree();
+
+
+    @Query("select  u from Conference  u where u.isValide = true ")
+    List<Conference> GetconferenceValid();
+
+
+    @Query("select  u from Conference  u where u.profile.Id =:Idprofile ")
+    List<Conference> GetconferenceByProfile(@Param("Idprofile") int idProfile);
+
+
+
+
+    @Query("select  u from  Conference u where  u.TypeConference  like '%:category%'")
+    List<Conference> ConferenceBycatgory();
+
+
+}
